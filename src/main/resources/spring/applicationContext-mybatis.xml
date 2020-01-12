@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:context="http://www.springframework.org/schema/context"
+ xmlns:aop="http://www.springframework.org/schema/aop"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans.xsd
+ http://www.springframework.org/schema/context
+ http://www.springframework.org/schema/context/spring-context-4.1.xsd
+ http://www.springframework.org/schema/aop
+ http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+ 
+       <context:property-placeholder location="classpath:config/dbconfig.properties"/>
+       <!-- 注册c3p0 -->
+       <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+           <property name="url" value="${jdbc.url}" />
+           <property name="username" value="${jdbc.username}" />
+           <property name="password" value="${jdbc.password}" />
+           <property name="driverClassName" value="${jdbc.driver}" />
+           <property name="maxActive" value="10" />
+           <property name="minIdle" value="5" />
+       </bean>
+       
+       <!-- 让spring容器创建一个SqlSessionFactory -->
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+             <!-- 注入数据源 -->
+            <property name="dataSource" ref="dataSource"></property>
+            <!-- 指定mybatis总配置文件的位置 -->
+            <property name="configLocation" value="classpath:mybatis/mybatis-cfg.xml"></property>
+       </bean>
+       
+       <!-- 把每个接口的实现类交给spring容器管理，在容器中的key就是接口简单名称 -->
+       <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+            <property name="basePackage" value="cn.offcn.mapper"></property>
+       </bean>
+ </beans>
